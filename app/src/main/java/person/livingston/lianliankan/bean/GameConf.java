@@ -21,9 +21,11 @@ public class GameConf {
      */
     public static final int ANIMAL_HEIGHT = 160;
     /**
-     * 记录游戏的总事件（100秒）.
+     * 记录游戏的总事件（60秒）.
      */
-    public static int DEFAULT_TIME = 100;
+    public static int DEFAULT_TIME = 60;
+    public static int GENERAL_TIME = 50;
+    public static int DIFFICULTY_TIME = 40;
     /**
      * Animal[][]数组第一维的长度
      */

@@ -3,32 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/bg_game"
+    android:gravity="center"
     tools:context="person.livingston.lianliankan.MainActivity">
 
-    <RelativeLayout
-        android:id="@+id/top_control_rl"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <Button
+        android:id="@+id/simple_game_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="简单" />
 
-        <TextView
-            android:id="@+id/leave_time_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="60" />
+    <Button
+        android:id="@+id/general_game_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/simple_game_btn"
+        android:text="中等" />
 
-        <Button
-            android:id="@+id/start_game_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="1" />
-    </RelativeLayout>
-
-    <person.livingston.lianliankan.widget.GameView
-        android:id="@+id/play_game_gv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/top_control_rl" />
+    <Button
+        android:id="@+id/difficulty_game_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/general_game_btn"
+        android:text="困难" />
 
 </RelativeLayout>
