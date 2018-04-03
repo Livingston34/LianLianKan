@@ -3,27 +3,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/bg_main"
     android:gravity="center"
     tools:context="person.livingston.lianliankan.MainActivity">
 
     <Button
         android:id="@+id/simple_game_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="190dp"
         android:layout_height="wrap_content"
-        android:text="简单" />
+        android:background="@mipmap/bg_home_model"
+        android:text="简单模式"
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/general_game_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="190dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/simple_game_btn"
-        android:text="中等" />
+        android:layout_marginTop="20dp"
+        android:background="@mipmap/bg_home_model"
+        android:text="中等模式"
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/difficulty_game_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="190dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/general_game_btn"
-        android:text="困难" />
+        android:layout_marginTop="20dp"
+        android:background="@mipmap/bg_home_model"
+        android:text="困难模式"
+        android:textColor="@color/white" />
 
 </RelativeLayout>

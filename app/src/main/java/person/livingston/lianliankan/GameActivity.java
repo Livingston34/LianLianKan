@@ -9,6 +9,7 @@ import android.os.Vibrator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +24,7 @@ import person.livingston.lianliankan.bean.LinkInfo;
 import person.livingston.lianliankan.control.GameControl;
 import person.livingston.lianliankan.widget.GameView;
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadCompleteListener {
 
     /**
      * 游戏配置对象
@@ -130,6 +131,7 @@ public class GameActivity extends AppCompatActivity {
         music_bg = soundPool.load(this, R.raw.music_bg, 1);
         clean = soundPool.load(this, R.raw.sound_clean, 2);
         read_go = soundPool.load(this, R.raw.sound_readygo, 3);
+        soundPool.setOnLoadCompleteListener(this);
         // 初始化游戏业务逻辑接口
         gameControl = new GameControl(this.config);
         // 设置游戏逻辑的实现类
@@ -168,7 +170,6 @@ public class GameActivity extends AppCompatActivity {
                         startGame(time);
                     }
                 });
-        startGame(time);
     }
 
     @Override
@@ -265,8 +266,6 @@ public class GameActivity extends AppCompatActivity {
             gameView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    soundPool.play(music_bg, 1, 1, 1, -1, 1);
-                    soundPool.play(read_go, 1, 1, 0, 0, 1);
                 }
             }, 500);
         }
@@ -334,6 +333,7 @@ public class GameActivity extends AppCompatActivity {
      * 停止计时
      */
     private void stopTimer() {
+        if (null == this.timer) return;
         // 停止定时器
         this.timer.cancel();
         this.timer = null;
@@ -344,5 +344,19 @@ public class GameActivity extends AppCompatActivity {
         super.onDestroy();
         soundPool.release();
         stopTimer();
+    }
+
+    @Override
+    public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+        if (read_go == sampleId) {
+            soundPool.play(music_bg, 1, 1, 0, -1, 1);
+            soundPool.play(read_go, 1, 1, 1, 0, 1);
+            gameView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startGame(time);
+                }
+            }, 2000);
+        }
     }
 }

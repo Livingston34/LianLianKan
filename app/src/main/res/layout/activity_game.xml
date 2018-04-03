@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/bg_game"
     tools:context="person.livingston.lianliankan.GameActivity">
 
     <RelativeLayout
@@ -17,18 +16,41 @@
             android:layout_height="wrap_content"
             android:text="60" />
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/btn_home" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/btn_pause" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/btn_pause_click" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/btn_refresh" />
+
         <Button
             android:id="@+id/start_game_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:text="1" />
+            android:background="@null"
+            android:drawableLeft="@mipmap/btn_home"
+            android:text="1111" />
     </RelativeLayout>
 
     <person.livingston.lianliankan.widget.GameView
         android:id="@+id/play_game_gv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/top_control_rl" />
+        android:layout_below="@+id/top_control_rl"
+        android:background="@mipmap/bg_main" />
 
 </RelativeLayout>
