@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg_main"
+    android:padding="20dp"
+    tools:context="person.livingston.lianliankan.activity.AboutActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_horizontal"
+            android:lineSpacingExtra="5dp"
+            android:text="关于游戏"
+            android:textColor="#00FFE5"
+            android:textSize="28sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="15dp"
+            android:lineSpacingExtra="5dp"
+            android:text="      玩家根据需求选择“简单模式”“中等模式”“困难模式”，进入游戏后，系统开始倒计时，游戏上方有时间进度条，玩家需要在规定时间内消除所有图形，即为过关，若没有消除所有图形，即为失败。在游戏过程中，可以选择“暂停游戏”“继续游戏”或“退出游戏”。"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+</RelativeLayout>

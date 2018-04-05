@@ -1,28 +1,32 @@
-package person.livingston.lianliankan;
+package person.livingston.lianliankan.activity;
 
 import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+import person.livingston.lianliankan.LivingstonApplication;
+import person.livingston.lianliankan.R;
 import person.livingston.lianliankan.bean.Animal;
 import person.livingston.lianliankan.bean.GameConf;
 import person.livingston.lianliankan.bean.LinkInfo;
+import person.livingston.lianliankan.common.Constant;
 import person.livingston.lianliankan.control.GameControl;
 import person.livingston.lianliankan.widget.GameView;
+import person.livingston.lianliankan.widget.OperateDialog;
 
 public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadCompleteListener {
 
@@ -41,11 +45,11 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
     /**
      * 开始按钮
      */
-    private Button startButton;
+    private ImageView startButton;
     /**
-     * 记录剩余时间的TextView
+     * 记录剩余时间的进度条
      */
-    private TextView timeTextView;
+    private ProgressBar timeProgessBar;
     /**
      * 失败后弹出的对话框
      */
@@ -75,8 +79,13 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
      */
     private Vibrator vibrator;
     private int music_bg;
+    private int music_bg_stream;
     private int read_go;
     private int clean;
+    private int win;
+    private int win_stream;
+    private int lose;
+    private int lose_stream;
     private SoundPool soundPool = new SoundPool(2, AudioManager.STREAM_SYSTEM, 8);
     /**
      * 记录已经选中的方块
@@ -89,7 +98,8 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0x123:
-                    timeTextView.setText("剩余时间： " + gameTime);
+                    if (isPause) return;
+                    timeProgessBar.setProgress(gameTime * 100 / time);
                     gameTime--; // 游戏剩余时间减少
                     // 时间小于0, 游戏失败
                     if (gameTime < 0) {
@@ -97,6 +107,10 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
                         stopTimer();
                         // 更改游戏的状态
                         isPlaying = false;
+                        boolean flag = LivingstonApplication.spUtils.getBoolean(Constant.Key.GAME_CLEAN_MUSIC_SWITCH, Constant.Value.DEFALUT_BOOLEAN);
+                        if (flag) {
+                            lose_stream = soundPool.play(lose, 1, 1, 1, 0, 1);
+                        }
                         // 失败后弹出对话框
                         lostDialog.show();
                         return;
@@ -105,6 +119,22 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
             }
         }
     };
+    /**
+     * 菜单操作弹框
+     */
+    private OperateDialog operateDialog;
+    /**
+     * 游戏背景音乐开关
+     */
+    private boolean gameBgMusicSwitch;
+    /**
+     * 游戏暂停符
+     */
+    private boolean isPause;
+    /**
+     * 游戏重新排列组合次数
+     */
+    private int shuffleNumber = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,15 +152,17 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
         config = new GameConf(this, 7, 10, 0, 0, time);
         // 得到游戏区域对象
         gameView = (GameView) findViewById(R.id.play_game_gv);
-        // 获取显示剩余时间的文本框
-        timeTextView = (TextView) findViewById(R.id.leave_time_tv);
+        // 获取显示剩余时间的进度条
+        timeProgessBar = (ProgressBar) findViewById(R.id.leave_time_pb);
         // 获取开始按钮
-        startButton = (Button) this.findViewById(R.id.start_game_btn);
+        startButton = (ImageView) this.findViewById(R.id.start_game_btn);
         // 获取振动器
         vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         music_bg = soundPool.load(this, R.raw.music_bg, 1);
         clean = soundPool.load(this, R.raw.sound_clean, 2);
         read_go = soundPool.load(this, R.raw.sound_readygo, 3);
+        win = soundPool.load(this, R.raw.sound_win, 3);
+        lose = soundPool.load(this, R.raw.sound_lose, 3);
         soundPool.setOnLoadCompleteListener(this);
         // 初始化游戏业务逻辑接口
         gameControl = new GameControl(this.config);
@@ -140,7 +172,9 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View source) {
-
+                isPause = true;
+                operateDialog.show();
+                gameView.setVisibility(View.GONE);
             }
         });
         // 为游戏区域的触碰事件绑定监听器
@@ -156,39 +190,102 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
             }
         });
         // 初始化游戏失败的对话框
-        lostDialog = createDialog("Lost", "游戏失败！ 重新开始", R.mipmap.ic_launcher)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        lostDialog = createDialog("游戏提示", "游戏失败！")
+                .setPositiveButton("重新开始", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        startGame(time);
+                        if (0 != lose_stream) soundPool.pause(lose_stream);
+                        startGamePre();
                     }
                 });
         // 初始化游戏胜利的对话框
-        successDialog = createDialog("Success", "游戏胜利！ 重新开始",
-                R.mipmap.ic_launcher).setPositiveButton("确定",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        startGame(time);
-                    }
-                });
+        successDialog = createDialog("游戏提示", "恭喜过关！")
+                .setPositiveButton("下一关",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (0 != win_stream) soundPool.pause(win_stream);
+                                if (GameConf.DEFAULT_TIME == time) {
+                                    time = GameConf.GENERAL_TIME;
+                                    startGamePre();
+                                } else if (GameConf.GENERAL_TIME == time) {
+                                    time = GameConf.DIFFICULTY_TIME;
+                                    startGamePre();
+                                }
+                            }
+                        });
+
+        operateDialog = new OperateDialog(this).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.game_continue_iv:
+                        isPause = false;
+                        break;
+                    case R.id.game_home_iv:
+                        finish();
+                        break;
+                    case R.id.game_help_iv:
+                        isPause = false;
+                        if (0 == shuffleNumber) return;
+                        shuffleNumber -= 1;
+                        gameControl.shuffle();
+                        if (gameTime - 10 < 0)
+                            gameTime = 0;
+                        else
+                            gameTime -= 10;
+                        gameView.postInvalidate();
+                        break;
+                    case R.id.game_reset_iv:
+                        startGamePre();
+                        break;
+                    case R.id.game_music_rl:
+                        boolean bflag = LivingstonApplication.spUtils.getBoolean(Constant.Key.GAME_BG_MUSIC_SWITCH, Constant.Value.DEFALUT_BOOLEAN);
+                        LivingstonApplication.spUtils.put(Constant.Key.GAME_BG_MUSIC_SWITCH, !bflag);
+                        if (gameBgMusicSwitch) {
+                            if (bflag) {
+                                soundPool.pause(music_bg_stream);
+                            } else {
+                                soundPool.resume(music_bg_stream);
+                            }
+                        } else {
+                            music_bg_stream = soundPool.play(music_bg, 1, 1, 0, -1, 1);
+                            gameBgMusicSwitch = true;
+                        }
+                        operateDialog.setMusicPauseToggle(bflag);
+                        break;
+                    case R.id.game_clean_music_rl:
+                        boolean cflag = LivingstonApplication.spUtils.getBoolean(Constant.Key.GAME_CLEAN_MUSIC_SWITCH, Constant.Value.DEFALUT_BOOLEAN);
+                        LivingstonApplication.spUtils.put(Constant.Key.GAME_CLEAN_MUSIC_SWITCH, !cflag);
+                        operateDialog.setCleanMusicPauseToggle(cflag);
+                        break;
+                }
+            }
+        });
+        operateDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                gameView.setVisibility(View.VISIBLE);
+            }
+        });
+        operateDialog.setMusicPauseToggle(!LivingstonApplication.spUtils.getBoolean(Constant.Key.GAME_BG_MUSIC_SWITCH, Constant.Value.DEFALUT_BOOLEAN));
+        operateDialog.setCleanMusicPauseToggle(!LivingstonApplication.spUtils.getBoolean(Constant.Key.GAME_CLEAN_MUSIC_SWITCH, Constant.Value.DEFALUT_BOOLEAN));
     }
 
     @Override
     protected void onPause() {
-        // 暂停游戏
-        stopTimer();
-        soundPool.autoPause();
         super.onPause();
+        if (isPlaying) {
+            isPause = true;
+            operateDialog.show();
+            gameView.setVisibility(View.GONE);
+            return;
+        }
+        soundPool.autoPause();
     }
 
     @Override
     protected void onResume() {
-        soundPool.autoResume();
-        // 如果处于游戏状态中
-        if (isPlaying) {
-            // 以剩余时间重新开始游戏
-            startGame(gameTime);
-        }
         super.onResume();
+        soundPool.autoResume();
     }
 
     /**
@@ -199,6 +296,7 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
     private void gameViewTouchDown(MotionEvent event) {
         // 获取GameControl中的Animal[][]数组
         Animal[][] animals = gameControl.getAnimals();
+        if (null == animals) return;
         // 获取用户点击的x座标
         float touchX = event.getX();
         // 获取用户点击的y座标
@@ -210,7 +308,7 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
             return;
         // 将gameView中的选中方块设为当前方块
         this.gameView.setSelectedAnimal(currentAnimal);
-        // 表示之前没有选中任何一个Piece
+        // 表示之前没有选中任何一个Animal
         if (this.selectedAnimal == null) {
             // 将当前方块设为已选中的方块, 重新将GamePanel绘制, 并不再往下执行
             this.selectedAnimal = currentAnimal;
@@ -260,9 +358,6 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
         if (gameTime == time) {
             // 开始新的游戏游戏
             gameView.startGame();
-
-            // 手机振动(100毫秒)
-            this.vibrator.vibrate(100);
             gameView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -303,9 +398,26 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
         this.selectedAnimal = null;
         // 手机振动(100毫秒)
         this.vibrator.vibrate(100);
-        soundPool.play(clean, 1, 1, 1, 0, 1);
+        boolean flag = LivingstonApplication.spUtils.getBoolean(Constant.Key.GAME_CLEAN_MUSIC_SWITCH, Constant.Value.DEFALUT_BOOLEAN);
+        if (flag) {
+            soundPool.play(clean, 1, 1, 1, 0, 1);
+        }
         // 判断是否还有剩下的方块, 如果没有, 游戏胜利
         if (!this.gameControl.hasAnimals()) {
+            if (GameConf.DIFFICULTY_TIME == time) {
+                this.successDialog
+                        .setMessage("亲，你已通关，请返回！")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (0 != win_stream) soundPool.pause(win_stream);
+                                finish();
+                            }
+                        });
+            }
+            if (flag) {
+                win_stream = soundPool.play(win, 1, 1, 1, 0, 1);
+            }
             // 游戏胜利
             this.successDialog.show();
             // 停止定时器
@@ -318,15 +430,13 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
     /**
      * 创建对话框的工具方法
      *
-     * @param title         标题
-     * @param message       内容
-     * @param imageResource 图片
+     * @param title   标题
+     * @param message 内容
      * @return
      */
-    private AlertDialog.Builder createDialog(String title, String message,
-                                             int imageResource) {
+    private AlertDialog.Builder createDialog(String title, String message) {
         return new AlertDialog.Builder(this).setTitle(title)
-                .setMessage(message).setIcon(imageResource);
+                .setMessage(message);
     }
 
     /**
@@ -344,12 +454,33 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
         super.onDestroy();
         soundPool.release();
         stopTimer();
+        if (null != operateDialog) {
+            operateDialog.dismiss();
+            operateDialog = null;
+        }
+        if (null != successDialog) {
+            successDialog = null;
+        }
+        if (null != lostDialog) {
+            lostDialog = null;
+        }
     }
 
     @Override
     public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
         if (read_go == sampleId) {
-            soundPool.play(music_bg, 1, 1, 0, -1, 1);
+            startGamePre();
+        }
+    }
+
+    private void startGamePre() {
+        boolean flag = LivingstonApplication.spUtils.getBoolean(Constant.Key.GAME_BG_MUSIC_SWITCH, Constant.Value.DEFALUT_BOOLEAN);
+        gameBgMusicSwitch = flag;
+        isPause = false;
+        gameControl.clearAnimals();
+        gameView.postInvalidate();
+        if (flag) {
+            music_bg_stream = soundPool.play(music_bg, 1, 1, 0, -1, 1);
             soundPool.play(read_go, 1, 1, 1, 0, 1);
             gameView.postDelayed(new Runnable() {
                 @Override
@@ -357,6 +488,19 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
                     startGame(time);
                 }
             }, 2000);
+        } else {
+            startGame(time);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isPlaying) {
+            isPause = true;
+            operateDialog.show();
+            gameView.setVisibility(View.GONE);
+            return;
+        }
+        finish();
     }
 }

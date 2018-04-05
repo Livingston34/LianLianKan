@@ -4,18 +4,18 @@ import android.graphics.Point;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import person.livingston.lianliankan.bean.Animal;
+import person.livingston.lianliankan.bean.AnimalImage;
 import person.livingston.lianliankan.bean.GameConf;
 import person.livingston.lianliankan.bean.LinkInfo;
 import person.livingston.lianliankan.board.BaseBoard;
 import person.livingston.lianliankan.board.FullBoard;
-import person.livingston.lianliankan.board.HorizontalBoard;
-import person.livingston.lianliankan.board.VerticalBoard;
 
 /**
  * Created by Livingston on 2018/03/31.
@@ -52,14 +52,6 @@ public class GameControl implements IGameControl {
         // 随机生成BaseBoard的子类实例
         Log.d("TAG", "==========");
         switch (index) {
-//            case 0:
-//                // 0返回VerticalBoard(竖向)
-//                board = new VerticalBoard();
-//                break;
-//            case 1:
-//                // 1返回HorizontalBoard(横向)
-//                board = new HorizontalBoard();
-//                break;
             default:
                 // 默认返回FullBoard
                 board = new FullBoard();
@@ -72,6 +64,16 @@ public class GameControl implements IGameControl {
     @Override
     public Animal[][] getAnimals() {
         return this.animals;
+    }
+
+    public void clearAnimals() {
+        if (null == animals) return;
+        // 遍历Animal[][]数组的每个元素
+        for (int i = 0; i < animals.length; i++) {
+            for (int j = 0; j < animals[i].length; j++) {
+                animals[i][j] = null;
+            }
+        }
     }
 
     @Override
@@ -131,8 +133,8 @@ public class GameControl implements IGameControl {
          * 获取relativeX座标在Animal[][]数组中的第一维的索引值 ，第二个参数为每张图片的宽
 		 */
         int indexX = getIndex(relativeX, GameConf.ANIMAL_WIDTH);
-		/*
-		 * 获取relativeY座标在Animal[][]数组中的第二维的索引值 ，第二个参数为每张图片的高
+        /*
+         * 获取relativeY座标在Animal[][]数组中的第二维的索引值 ，第二个参数为每张图片的高
 		 */
         int indexY = getIndex(relativeY, GameConf.ANIMAL_HEIGHT);
         // 这两个索引比数组的最小索引还小, 返回null
@@ -178,8 +180,8 @@ public class GameControl implements IGameControl {
                 return new LinkInfo(p1Point, p2Point);
             }
         }
-		/*
-		 * 情况3：两个animal以两条线段相连，也就是有一个转折点的情况。 获取两个点的直角相连的点, 即只有一个转折点
+        /*
+         * 情况3：两个animal以两条线段相连，也就是有一个转折点的情况。 获取两个点的直角相连的点, 即只有一个转折点
 		 */
         Point cornerPoint = getCornerPoint(p1Point, p2Point,
                 GameConf.ANIMAL_WIDTH, GameConf.ANIMAL_HEIGHT);
@@ -187,8 +189,8 @@ public class GameControl implements IGameControl {
         if (cornerPoint != null) {
             return new LinkInfo(p1Point, cornerPoint, p2Point);
         }
-		/*
-		 * 情况4：两个animal以三条线段相连，有两个转折点的情况。 该map的key存放第一个转折点,
+        /*
+         * 情况4：两个animal以三条线段相连，有两个转折点的情况。 该map的key存放第一个转折点,
 		 * value存放第二个转折点,map的size()说明有多少种可以连的方式
 		 */
         Map<Point, Point> turns = getLinkPoints(p1Point, p2Point,
@@ -232,8 +234,8 @@ public class GameControl implements IGameControl {
         // 获取Board的最大宽度
         int widthMax = (this.config.getXSize() + 1) * animalWidth
                 + this.config.getBeginImageX();
-		/*
-		 * 先确定两个点的关系，如果 point2在point1的左上角或者左下角
+        /*
+         * 先确定两个点的关系，如果 point2在point1的左上角或者左下角
 		 */
         if (isLeftUp(point1, point2) || isLeftDown(point1, point2)) {
             // 参数换位, 调用本方法
@@ -781,5 +783,38 @@ public class GameControl implements IGameControl {
             result.add(new Point(p.x, i));
         }
         return result;
+    }
+
+    /**
+     * 动物重新位置排列
+     */
+    public void shuffle() {
+        Random random = new Random();
+        // 遍历animals二维数组
+        for (int i = 0; i < animals.length; i++) {
+            int hLength = animals.length;
+            for (int j = 0; j < animals[i].length; j++) {
+                int vLength = animals[i].length;
+                int x = 1 + random.nextInt(hLength - 3);
+                int y = 1 + random.nextInt(vLength - 3);
+                Animal animal1 = null;
+                Animal animal2 = null;
+                try {
+                    if (null != animals[i][j])
+                        animal1 = (Animal) animals[i][j].clone();
+                    if (null != animals[x][y])
+                        animal2 = (Animal) animals[x][y].clone();
+                    if (null != animal1 && null != animal2) {
+                        AnimalImage animalImage1 = animal1.getImage();
+                        AnimalImage animalImage2 = animal2.getImage();
+                        animals[i][j].setImage(animalImage2);
+                        animals[x][y].setImage(animalImage1);
+                    }
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
     }
 }

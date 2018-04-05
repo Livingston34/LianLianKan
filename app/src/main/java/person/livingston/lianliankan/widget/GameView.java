@@ -98,7 +98,6 @@ public class GameView extends View {
             return;
         Animal[][] animals = gameControl.getAnimals();
         if (animals != null) {
-            Log.d("TAG", "===" + animals.length);
             // 遍历animals二维数组
             for (int i = 0; i < animals.length; i++) {
                 for (int j = 0; j < animals[i].length; j++) {

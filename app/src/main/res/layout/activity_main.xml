@@ -4,35 +4,99 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/bg_main"
-    android:gravity="center"
-    tools:context="person.livingston.lianliankan.MainActivity">
+    tools:context="person.livingston.lianliankan.activity.MainActivity">
 
-    <Button
-        android:id="@+id/simple_game_btn"
-        android:layout_width="190dp"
+    <RelativeLayout
+        android:id="@+id/game_show_rl"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@mipmap/bg_home_model"
-        android:text="简单模式"
-        android:textColor="@color/white" />
+        android:layout_centerInParent="true">
 
-    <Button
-        android:id="@+id/general_game_btn"
-        android:layout_width="190dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/simple_game_btn"
-        android:layout_marginTop="20dp"
-        android:background="@mipmap/bg_home_model"
-        android:text="中等模式"
-        android:textColor="@color/white" />
+        <Button
+            android:id="@+id/game_model_btn"
+            android:layout_width="190dp"
+            android:layout_height="44dp"
+            android:background="@mipmap/bg_home_model"
+            android:text="游戏模式"
+            android:textColor="@color/white" />
 
-    <Button
-        android:id="@+id/difficulty_game_btn"
-        android:layout_width="190dp"
+
+        <Button
+            android:id="@+id/game_rule_btn"
+            android:layout_width="190dp"
+            android:layout_height="44dp"
+            android:layout_below="@+id/game_model_btn"
+            android:layout_marginTop="20dp"
+            android:background="@mipmap/bg_home_model"
+            android:text="游戏规则"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/about_game_btn"
+            android:layout_width="190dp"
+            android:layout_height="44dp"
+            android:layout_below="@+id/game_rule_btn"
+            android:layout_marginTop="20dp"
+            android:background="@mipmap/bg_home_model"
+            android:text="关于游戏"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/general_game_btn"
-        android:layout_marginTop="20dp"
-        android:background="@mipmap/bg_home_model"
-        android:text="困难模式"
-        android:textColor="@color/white" />
+        android:layout_alignRight="@+id/game_show_rl"
+        android:layout_below="@+id/game_show_rl"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="60dp">
+
+        <RelativeLayout
+            android:id="@+id/game_music_rl"
+            android:layout_width="45dp"
+            android:layout_height="45dp">
+
+            <ImageView
+                android:id="@+id/game_music_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center_vertical"
+                android:src="@mipmap/music" />
+
+            <ImageView
+                android:id="@+id/game_music_close_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="center_vertical"
+                android:src="@mipmap/pause"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/game_clean_music_rl"
+            android:layout_width="45dp"
+            android:layout_height="45dp">
+
+            <ImageView
+                android:id="@+id/game_clean_music_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/clean_music" />
+
+            <ImageView
+                android:id="@+id/game_clean_music_close_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="center_vertical"
+                android:src="@mipmap/pause"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>

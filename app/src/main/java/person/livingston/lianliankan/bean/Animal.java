@@ -6,7 +6,7 @@ import android.graphics.Point;
  * Created by Livingston on 2018/03/31.
  */
 
-public class Animal {
+public class Animal implements Cloneable {
 
     // 保存动物对象的所对应的图片
     private AnimalImage image;
@@ -75,9 +75,14 @@ public class Animal {
     // 判断两个Animal上的图片是否相同
     public boolean isSameImage(Animal other) {
         if (null == image && null != other.image) {
-                return false;
+            return false;
         }
         // 只要Animal封装图片ID相同，即可认为两个Animal相等。
         return image.getImageId() == other.image.getImageId();
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

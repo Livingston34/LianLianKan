@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
+        android:name=".LivingstonApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -12,7 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
+            android:theme="@style/MainStyle"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,8 +23,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GameActivity"
-            android:screenOrientation="portrait"></activity>
+            android:name=".activity.GameActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.LevelActivity" />
+        <activity android:name=".activity.AboutActivity" />
+        <activity android:name=".activity.RuleActivity"></activity>
     </application>
 
 </manifest>
