@@ -38,8 +38,8 @@ public abstract class BaseBoard {
         List<AnimalImage> playImages = ImageUtils.getPlayImages(
                 config.getContext(), animalList.size());
         // 所有图片的宽、高都是相同的
-        int imageWidth = playImages.get(0).getImage().getWidth();
-        int imageHeight = playImages.get(0).getImage().getHeight();
+        int imageWidth = GameConf.ANIMAL_WIDTH;
+        int imageHeight = GameConf.ANIMAL_HEIGHT;
         // 遍历非空的Animal集合
         for (int i = 0; i < animalList.size(); i++) {
             // 依次获取每个Piece对象

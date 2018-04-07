@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.blankj.utilcode.util.ScreenUtils;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -149,6 +151,8 @@ public class GameActivity extends AppCompatActivity implements SoundPool.OnLoadC
      */
     private void init() {
         time = getIntent().getIntExtra("time", GameConf.DEFAULT_TIME);
+        GameConf.ANIMAL_WIDTH = ScreenUtils.getScreenWidth() / 7;
+        GameConf.ANIMAL_HEIGHT = GameConf.ANIMAL_WIDTH;
         config = new GameConf(this, 7, 10, 0, 0, time);
         // 得到游戏区域对象
         gameView = (GameView) findViewById(R.id.play_game_gv);
