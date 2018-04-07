@@ -65,14 +65,14 @@ public class OperateDialog extends Dialog {
         setCanceledOnTouchOutside(false);
 
         if (null == game_continue_iv) {
-            game_continue_iv = layout.findViewById(R.id.game_continue_iv);
-            game_home_iv = layout.findViewById(R.id.game_home_iv);
-            game_help_iv = layout.findViewById(R.id.game_help_iv);
-            game_reset_iv = layout.findViewById(R.id.game_reset_iv);
-            game_music_rl = layout.findViewById(R.id.game_music_rl);
-            game_music_close_iv = layout.findViewById(R.id.game_music_close_iv);
-            game_clean_music_rl = layout.findViewById(R.id.game_clean_music_rl);
-            game_clean_music_close_iv = layout.findViewById(R.id.game_clean_music_close_iv);
+            game_continue_iv = (ImageView) layout.findViewById(R.id.game_continue_iv);
+            game_home_iv = (ImageView) layout.findViewById(R.id.game_home_iv);
+            game_help_iv = (ImageView) layout.findViewById(R.id.game_help_iv);
+            game_reset_iv = (ImageView) layout.findViewById(R.id.game_reset_iv);
+            game_music_rl = (RelativeLayout) layout.findViewById(R.id.game_music_rl);
+            game_music_close_iv = (ImageView) layout.findViewById(R.id.game_music_close_iv);
+            game_clean_music_rl = (RelativeLayout) layout.findViewById(R.id.game_clean_music_rl);
+            game_clean_music_close_iv = (ImageView) layout.findViewById(R.id.game_clean_music_close_iv);
         }
         game_continue_iv.setOnClickListener(listener);
         game_home_iv.setOnClickListener(listener);
